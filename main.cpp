@@ -8,7 +8,7 @@
 using namespace std;
 
 int main() {
-    compress("/home/daniil/CLionProjects/huffman/input.txt", "/home/daniil/CLionProjects/huffman/out.txt");
+      compress("/home/daniil/CLionProjects/huffman/input.txt", "/home/daniil/CLionProjects/huffman/out.txt");
 //    buffered_reader bf("/home/daniil/CLionProjects/huffman/input.txt");
 //    buffered_writer bw("/home/daniil/CLionProjects/huffman/out.txt");
 //    while (!bf.eof()) {

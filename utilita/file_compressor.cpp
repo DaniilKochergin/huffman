@@ -18,7 +18,12 @@ void compress(std::string const &input, std::string const &output) {
         data.put(reader.read());
     }
     compressor compressor(data);
-    std::vector<char> tmp(compressor.get_huffman_code());
+    compressor.get_compressed_code(data.get_data());
+    std::vector<char> tmp(compressor.get_size());
+    for(char cur:tmp){
+        writer.write(cur);
+    }
+    tmp = compressor.get_huffman_code();
     for (char cur : tmp) {
         writer.write(cur);
     }

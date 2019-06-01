@@ -53,14 +53,15 @@ std::vector<char> huffman_tree::get_tree() {
     if (value_key.size() == 1) {
         res.push_back('L');
         res.push_back('U');
+        res.push_back('U');
         return res;
     }
     if (value_key.empty()) {
+        res.push_back('U');
         return res;
     }
     std::vector<bool> seq_bits;
     dfs(res, seq_bits);
-    res.pop_back();
     return res;
 }
 

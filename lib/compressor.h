@@ -15,12 +15,16 @@ struct compressor {
 
     std::vector<char> get_huffman_code();
 
-    std::vector<char> get_compressed_code(std::vector<char> const &data) const;
+    std::vector<char> get_compressed_code(std::vector<char> const &data);
+
+    std::vector<char> const &get_size() const;
 
 private:
 
     std::vector<char> transpose(std::vector<bool> v) const;
+
     huffman_tree tree;
+    std::vector<char> size;
 };
 
 

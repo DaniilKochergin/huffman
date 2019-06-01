@@ -7,14 +7,41 @@
 
 #include <vector>
 #include <cstdint>
+#include <unordered_map>
 
 struct decompressor {
-    decompressor(std::vector<std::pair<char, uint32_t>> _keys, std::vector<char> data);
+    explicit decompressor(std::vector<char> const &a);
+
     ~decompressor() = default;
-    std::vector<char> decompress() const;
+
+    std::vector<char> decompress();
+
 private:
-    std::vector<std::pair<char, uint32_t>> keys;
-    std::vector<char> data;
+    void dfs(std::vector<bool> &seq_bits, std::vector<std::vector<bool>> &keys);
+
+    void parse_keys();
+
+    static std::vector<bool> transpose(std::vector<char> const &v);
+
+    struct tokenizer {
+        explicit tokenizer(std::vector<char> const &v);
+
+        bool get();
+
+        char get_char();
+
+        void align();
+
+        bool eof();
+
+    private:
+        std::vector<bool> binary_data;
+        size_t index;
+    };
+
+    uint32_t size;
+    std::unordered_map<std::vector<bool>, char> key_value;
+    tokenizer data;
 };
 
 

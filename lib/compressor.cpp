@@ -34,9 +34,16 @@ std::vector<char> compressor::get_huffman_code() {
     return res;
 }
 
-std::vector<char> compressor::get_compressed_code(std::vector<char> const &data) const {
-    std::unordered_map<char, std::vector<bool>> const keys = tree.get_keys();
+std::vector<char> compressor::get_compressed_code(std::vector<char> const &data) {
+
+    uint32_t sz = data.size();
     std::vector<bool> tmp;
+    for(size_t i =0;i<32;++i){
+        tmp.push_back((sz>>(31-i))&1);
+    }
+    size = transpose(tmp);
+    std::unordered_map<char, std::vector<bool>> const keys = tree.get_keys();
+    tmp.clear();
     for (size_t i = 0; i < data.size(); ++i) {
         auto it = keys.find(data[i]);
         for (size_t j = 0; j < it->second.size(); ++j) {
@@ -49,10 +56,15 @@ std::vector<char> compressor::get_compressed_code(std::vector<char> const &data)
 std::vector<char> compressor::transpose(std::vector<bool> v) const {
     std::vector<char> res;
     for (char i = 0; i <= v.size() / 8; ++i) {
-        res.push_back(0);
+        if (i*8<v.size()) res.push_back(0);
         for (char j = 0; j < 8; ++j) {
-            res[i] |= (static_cast<char>(v[i * sizeof(char) + j]) << (8 - j - 1));
+            if (i*8+j>=v.size()) break;
+            res[i] |= (static_cast<char>(v[i * 8 + j]) << (8 - j - 1));
         }
     }
     return res;
+}
+
+std::vector<char> const &compressor::get_size() const {
+    return size;
 }
