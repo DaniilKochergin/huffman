@@ -9,7 +9,6 @@ buffered_reader::buffered_reader(std::string const &file__) : reader(file__, std
         reader.close();
         throw std::runtime_error("Bad file!");
     }
-
 }
 
 buffered_reader::~buffered_reader() {

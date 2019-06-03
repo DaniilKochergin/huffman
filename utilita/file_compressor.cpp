@@ -23,11 +23,13 @@ void compress(std::string const &input, std::string const &output) {
     for (char cur:tmp) {
         writer.write(cur);
     }
-    tmp = compressor.get_huffman_code();
+    tmp.clear();
+    compressor.get_huffman_code(tmp);
     for (char cur : tmp) {
         writer.write(cur);
     }
-    tmp = compressor.get_compressed_code(data.get_data());
+    tmp.clear();
+    compressor.get_compressed_code(data.get_data(), tmp);
     for (char cur : tmp) {
         writer.write(cur);
     }
@@ -48,7 +50,8 @@ void block_compress(std::string const &input, std::string const &output, size_t 
     for (char cur:tmp) {
         writer.write(cur);
     }
-    tmp = compressor.get_huffman_code();
+    tmp.clear();
+    compressor.get_huffman_code(tmp);
     for (char cur : tmp) {
         writer.write(cur);
     }
@@ -59,7 +62,8 @@ void block_compress(std::string const &input, std::string const &output, size_t 
         for (size_t i = 0; i < block_sz && !reader.eof(); ++i) {
             data.put(reader.read());
         }
-        tmp = compressor.get_compressed_code(data.get_data());
+        tmp.clear();
+        compressor.get_compressed_code(data.get_data(), tmp);
         for (char cur : tmp) {
             writer.write(cur);
         }

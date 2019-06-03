@@ -12,10 +12,10 @@ compressor::compressor(data_source const &data) : tree(data.get_count_data()) {
     for (size_t i = 0; i < 32; ++i) {
         tmp.push_back((size_code >> (31 - i)) & 1);
     }
-    size = transpose(tmp);
+    transpose(tmp, size);
 }
 
-std::vector<char> compressor::get_huffman_code() {
+void compressor::get_huffman_code(std::vector<char> & res) {
     std::vector<char> const huff_tree = tree.get_tree();
     std::vector<bool> binary_code_tree;
     for (size_t i = 0; i < huff_tree.size(); ++i) {
@@ -32,15 +32,14 @@ std::vector<char> compressor::get_huffman_code() {
             binary_code_tree.push_back(false);
         }
     }
-    std::vector<char> res(transpose(binary_code_tree));
+    transpose(binary_code_tree, res);
     std::vector<char> tmp(tree.get_keys_in_order());
     for (size_t i = 0; i < tmp.size(); ++i) {
         res.push_back(tmp[i]);
     }
-    return res;
 }
 
-std::vector<char> compressor::get_compressed_code(std::vector<char> const &data) {
+void compressor::get_compressed_code(std::vector<char> const &data, std::vector<char> & res) {
     std::vector<bool> tmp;
     std::unordered_map<char, std::vector<bool>> const keys = tree.get_keys();
     size_code -= data.size();
@@ -61,11 +60,10 @@ std::vector<char> compressor::get_compressed_code(std::vector<char> const &data)
         }
         std::reverse(last_bits.begin(), last_bits.end());
     }
-    return transpose(tmp);
+    transpose(tmp, res);
 }
 
-std::vector<char> compressor::transpose(std::vector<bool> v) const {
-    std::vector<char> res;
+void compressor::transpose(std::vector<bool> const &v, std::vector<char> &res) const {
     for (size_t i = 0; i * 8 < v.size(); ++i) {
         res.push_back(0);
         for (size_t j = 0; j < 8; ++j) {
@@ -73,7 +71,6 @@ std::vector<char> compressor::transpose(std::vector<bool> v) const {
             res[i] |= (static_cast<char>(v[i * 8 + j]) << (8 - j - 1));
         }
     }
-    return res;
 }
 
 std::vector<char> const &compressor::get_size() const {

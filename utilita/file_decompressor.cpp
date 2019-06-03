@@ -16,7 +16,8 @@ void decompress(const std::string &input, const std::string &output) {
         data.put(reader.read());
     }
     decompressor decompressor(data.get_data());
-    std::vector<char> res(decompressor.decompress());
+    std::vector<char> res;
+    decompressor.decompress(res);
     for (size_t i = 0; i < res.size(); ++i) {
         writer.write(res[i]);
     }
@@ -35,7 +36,8 @@ void block_decompress(std::string const &input, std::string const &output, size_
         data.put(reader.read());
     }
     decompressor decompressor(data.get_data());
-    std::vector<char> res(decompressor.decompress());
+    std::vector<char> res;
+    decompressor.decompress(res);
     for (size_t i = 0; i < res.size(); ++i) {
         writer.write(res[i]);
     }
@@ -44,7 +46,8 @@ void block_decompress(std::string const &input, std::string const &output, size_
         for (size_t i = 0; i < block_sz && !reader.eof(); ++i) {
             data.put(reader.read());
         }
-        std::vector<char> tmp(decompressor.decompress_block(data.get_data()));
+        std::vector<char> tmp;
+        decompressor.decompress_block(data.get_data(), tmp);
         for (size_t i = 0; i < tmp.size(); ++i) {
             writer.write(tmp[i]);
         }

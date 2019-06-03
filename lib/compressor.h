@@ -13,9 +13,9 @@
 struct compressor {
     explicit compressor(data_source const &data);
 
-    std::vector<char> get_huffman_code();
+    void get_huffman_code(std::vector<char> & res);
 
-    std::vector<char> get_compressed_code(std::vector<char> const &data);
+    void get_compressed_code(std::vector<char> const &data,  std::vector<char> & res);
 
     std::vector<char> const &get_size() const;
 
@@ -23,7 +23,7 @@ struct compressor {
 
 private:
 
-    std::vector<char> transpose(std::vector<bool> v) const;
+    void transpose(std::vector<bool> const &v, std::vector<char> & res) const;
 
     std::vector<bool> last_bits;
     huffman_tree tree;

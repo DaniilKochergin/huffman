@@ -14,9 +14,9 @@ struct decompressor {
 
     ~decompressor() = default;
 
-    std::vector<char> decompress();
+    void decompress(std::vector<char> & res);
 
-    std::vector<char> decompress_block(std::vector<char> const &block);
+    void decompress_block(std::vector<char> const &block, std::vector<char> & res);
 
     void check();
 
@@ -25,9 +25,9 @@ private:
 
     void parse_keys();
 
-    std::vector<char> parse_data();
+    void parse_data(std::vector<char> & res);
 
-    static std::vector<bool> transpose(std::vector<char> const &v);
+    static void transpose(std::vector<char> const &v, std::vector<bool> & res);
 
     struct tokenizer {
         explicit tokenizer(std::vector<char> const &v);
@@ -48,8 +48,6 @@ private:
         std::vector<bool> binary_data;
         size_t index;
     };
-
-    std::vector<bool> last_bits;
     uint32_t size;
     std::unordered_map<std::vector<bool>, char> key_value;
     tokenizer data;

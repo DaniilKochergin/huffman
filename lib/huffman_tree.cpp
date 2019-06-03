@@ -45,40 +45,39 @@ std::unordered_map<char, std::vector<bool>> const &huffman_tree::get_keys() cons
     return key_value;
 }
 
-std::vector<char> huffman_tree::get_tree() {
-    std::vector<char> res;
-    if (value_key.size() == 1) {
-        res.push_back('L');
-        res.push_back('U');
-        res.push_back('U');
-        order_keys.push_back(value_key.begin()->second);
-        return res;
+std::vector<char> const &huffman_tree::get_tree() {
+    if (tree.empty()) {
+        if (value_key.size() == 1) {
+            tree.push_back('L');
+            tree.push_back('U');
+            tree.push_back('U');
+            order_keys.push_back(value_key.begin()->second);
+        } else if (value_key.empty()) {
+            tree.push_back('U');
+        } else {
+            std::vector<bool> seq_bits;
+            dfs(seq_bits);
+        }
     }
-    if (value_key.empty()) {
-        res.push_back('U');
-        return res;
-    }
-    std::vector<bool> seq_bits;
-    dfs(res, seq_bits);
-    return res;
+    return tree;
 }
 
-void huffman_tree::dfs(std::vector<char> &v, std::vector<bool> &seq_bits) {
+void huffman_tree::dfs(std::vector<bool> &seq_bits) {
     auto it = value_key.find(seq_bits);
     if (it != value_key.end()) {
-        v.push_back('U');
+        tree.push_back('U');
         order_keys.push_back(it->second);
         return;
     }
-    v.push_back('L');
+    tree.push_back('L');
     seq_bits.push_back(false);
-    dfs(v, seq_bits);
+    dfs(seq_bits);
     seq_bits.pop_back();
-    v.push_back('R');
+    tree.push_back('R');
     seq_bits.push_back(true);
-    dfs(v, seq_bits);
+    dfs(seq_bits);
     seq_bits.pop_back();
-    v.push_back('U');
+    tree.push_back('U');
 }
 
 std::vector<char> const &huffman_tree::get_keys_in_order() const {

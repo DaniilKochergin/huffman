@@ -7,27 +7,25 @@
 
 decompressor::decompressor(std::vector<char> const &a) : data(a), size(0) {}
 
-std::vector<char> decompressor::decompress_block(std::vector<char> const &block) {
+void decompressor::decompress_block(std::vector<char> const &block, std::vector<char> & res) {
     data.resize(block);
-    return parse_data();
+    parse_data(res);
 }
 
-std::vector<bool> decompressor::transpose(std::vector<char> const &v) {
-    std::vector<bool> res;
+void decompressor::transpose(std::vector<char> const &v, std::vector<bool> & res) {
     for (size_t i = 0; i < v.size(); ++i) {
         for (size_t j = 0; j < 8; ++j) {
             res.push_back((static_cast<char>(v[i]) >> (7 - j)) & 1);
         }
     }
-    return res;
 }
 
-std::vector<char> decompressor::decompress() {
+void decompressor::decompress(std::vector<char> & res) {
     for (int i = 31; i >= 0; --i) {
         size |= (static_cast<uint32_t >(data.get()) << i);
     }
     parse_keys();
-    return parse_data();
+    parse_data(res);
 }
 
 
@@ -83,8 +81,7 @@ void decompressor::dfs(std::vector<bool> &seq_bits, std::vector<std::vector<bool
     }
 }
 
-std::vector<char> decompressor::parse_data() {
-    std::vector<char> res;
+void decompressor::parse_data(std::vector<char> & res) {
     std::vector<bool> key;
     while (size > 0 && !data.eof()) {
         while (!data.eof()) {
@@ -99,7 +96,6 @@ std::vector<char> decompressor::parse_data() {
         }
     }
     data.back(key.size());
-    return res;
 }
 
 
@@ -109,7 +105,9 @@ void decompressor::check() {
     }
 }
 
-decompressor::tokenizer::tokenizer(std::vector<char> const &v) : binary_data(transpose(v)), index(0) {}
+decompressor::tokenizer::tokenizer(std::vector<char> const &v) : index(0) {
+    transpose(v, binary_data);
+}
 
 bool decompressor::tokenizer::get() {
     if (eof()) {
@@ -143,7 +141,8 @@ void decompressor::tokenizer::resize(std::vector<char> const &v) {
     for (size_t i = 0; i < tmp.size(); ++i) {
         binary_data.push_back(tmp[i]);
     }
-    tmp = transpose(v);
+    tmp.clear();
+    transpose(v, tmp);
     for (size_t i = 0; i < tmp.size(); ++i) {
         binary_data.push_back(tmp[i]);
     }
