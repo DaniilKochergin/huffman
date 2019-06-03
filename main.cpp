@@ -5,10 +5,14 @@
 #include "utilita/buffered_reader.h"
 #include "utilita/buffered_writer.h"
 #include "utilita/file_compressor.h"
+#include "utilita/file_decompressor.h"
+
 using namespace std;
 
 int main() {
-      compress("/home/daniil/CLionProjects/huffman/input.txt", "/home/daniil/CLionProjects/huffman/out.txt");
+    block_compress("/home/daniil/CLionProjects/huffman/input.txt", "/home/daniil/CLionProjects/huffman/out.txt", 1024);
+    block_decompress("/home/daniil/CLionProjects/huffman/out.txt", "/home/daniil/CLionProjects/huffman/input.txt",
+                     1024);
 //    buffered_reader bf("/home/daniil/CLionProjects/huffman/input.txt");
 //    buffered_writer bw("/home/daniil/CLionProjects/huffman/out.txt");
 //    while (!bf.eof()) {

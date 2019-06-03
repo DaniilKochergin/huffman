@@ -6,14 +6,12 @@
 #include <algorithm>
 #include "huffman_tree.h"
 
-huffman_tree::huffman_tree(std::vector<uint32_t> const &data) {
+huffman_tree::huffman_tree(std::unordered_map<char, uint32_t> const &data) {
     std::priority_queue<std::pair<uint32_t, std::string>, std::vector<std::pair<uint32_t, std::string>>, qux> q;
-    for (size_t i = 0; i < data.size(); ++i) {
-        if (data[i] != 0) {
-            std::string s;
-            s.push_back(i);
-            q.push(std::make_pair(data[i], s));
-        }
+    for (auto it = data.begin(); it != data.end(); ++it) {
+        std::string s;
+        s.push_back(it->first);
+        q.push(std::make_pair(it->second, s));
     }
     if (q.size() == 1) {
         key_value[q.top().second[0]].push_back(false);
@@ -37,9 +35,8 @@ huffman_tree::huffman_tree(std::vector<uint32_t> const &data) {
     };
 
     for (auto &key : key_value) {
-        std::vector<bool> tmp(key.second);
-        std::reverse(tmp.begin(), tmp.end());
-        value_key[tmp] = key.first;
+        std::reverse(key.second.begin(), key.second.end());
+        value_key[key.second] = key.first;
     }
 
 }
@@ -54,6 +51,7 @@ std::vector<char> huffman_tree::get_tree() {
         res.push_back('L');
         res.push_back('U');
         res.push_back('U');
+        order_keys.push_back(value_key.begin()->second);
         return res;
     }
     if (value_key.empty()) {

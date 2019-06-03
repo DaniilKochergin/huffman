@@ -6,17 +6,30 @@
 #define HUFFMAN_DATA_SOURCE_H
 
 #include <vector>
+#include <unordered_map>
 
 struct data_source {
-    data_source() = delete;
+    data_source() = default;
+
     ~data_source() = default;
-    data_source(data_source const & other) = default;
-    explicit data_source(size_t size);
-    std::vector<uint32_t> const & get_count_data() const;
-    std::vector<char> const & get_data();
+
+    data_source(data_source const &other) = default;
+
+
+    std::unordered_map<char, uint32_t> const &get_count_data() const;
+
+    std::vector<char> const &get_data();
+
+
+    uint32_t get_size() const;
+
     void put(char a);
+
+    void clear_data();
+
 private:
-    std::vector<uint32_t> count_data;
+    uint32_t size = 0;
+    std::unordered_map<char, uint32_t> count_data;
     std::vector<char> data;
 };
 

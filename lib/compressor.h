@@ -19,10 +19,13 @@ struct compressor {
 
     std::vector<char> const &get_size() const;
 
+    uint32_t size_code;
+
 private:
 
     std::vector<char> transpose(std::vector<bool> v) const;
 
+    std::vector<bool> last_bits;
     huffman_tree tree;
     std::vector<char> size;
 };

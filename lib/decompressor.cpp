@@ -7,12 +7,16 @@
 
 decompressor::decompressor(std::vector<char> const &a) : data(a), size(0) {}
 
+std::vector<char> decompressor::decompress_block(std::vector<char> const &block) {
+    data.resize(block);
+    return parse_data();
+}
+
 std::vector<bool> decompressor::transpose(std::vector<char> const &v) {
     std::vector<bool> res;
-    for (size_t i = 0; i <= v.size() / 8; ++i) {
+    for (size_t i = 0; i < v.size(); ++i) {
         for (size_t j = 0; j < 8; ++j) {
-            if (i * 8 + j < v.size()) break;
-            res.push_back((v[i] >> (8 - j)) & 1);
+            res.push_back((static_cast<char>(v[i]) >> (7 - j)) & 1);
         }
     }
     return res;
@@ -23,29 +27,14 @@ std::vector<char> decompressor::decompress() {
         size |= (static_cast<uint32_t >(data.get()) << i);
     }
     parse_keys();
-    std::vector<char> res;
-    for (int i = 0; i < size; ++i) {
-        std::vector<bool> key;
-        while (true) {
-            auto it = key_value.find(key);
-            if (it != key_value.end()) {
-                res.push_back(it->second);
-                break;
-            }
-            key.push_back(data.get());
-        }
-    }
-    data.align();
-    if (!data.eof()){
-        throw std::runtime_error("Extra bits in compressed file!");
-    }
-    return res;
+    return parse_data();
 }
+
 
 void decompressor::parse_keys() {
     std::vector<bool> seq_bits;
     std::vector<std::vector<bool>> keys;
-    dfs(seq_bits, keys);
+    if (size != 0) dfs(seq_bits, keys);
     data.align();
     for (const auto &key : keys) {
         key_value[key] = data.get_char();
@@ -81,6 +70,7 @@ void decompressor::dfs(std::vector<bool> &seq_bits, std::vector<std::vector<bool
         throw std::runtime_error("Bad huffman tree!");
     }
 
+    dfs(seq_bits, keys);
     seq_bits.pop_back();
 
     f1 = data.get();
@@ -93,11 +83,37 @@ void decompressor::dfs(std::vector<bool> &seq_bits, std::vector<std::vector<bool
     }
 }
 
+std::vector<char> decompressor::parse_data() {
+    std::vector<char> res;
+    std::vector<bool> key;
+    while (size > 0 && !data.eof()) {
+        while (!data.eof()) {
+            key.push_back(data.get());
+            auto it = key_value.find(key);
+            if (it != key_value.end()) {
+                res.push_back(it->second);
+                key.clear();
+                size--;
+                break;
+            }
+        }
+    }
+    data.back(key.size());
+    return res;
+}
+
+
+void decompressor::check() {
+    if (size != 0) {
+        throw std::runtime_error("Bad bits!");
+    }
+}
+
 decompressor::tokenizer::tokenizer(std::vector<char> const &v) : binary_data(transpose(v)), index(0) {}
 
 bool decompressor::tokenizer::get() {
     if (eof()) {
-        throw std::runtime_error("Bad huffman tree!");
+        throw std::runtime_error("Bad bits!");
     }
     return binary_data[index++];
 }
@@ -115,6 +131,27 @@ char decompressor::tokenizer::get_char() {
 }
 
 void decompressor::tokenizer::align() {
-    index += index % 8;
+    index += (8 - (index % 8));
 }
+
+void decompressor::tokenizer::resize(std::vector<char> const &v) {
+    std::vector<bool> tmp;
+    while (!eof()) {
+        tmp.push_back(get());
+    }
+    binary_data.clear();
+    for (size_t i = 0; i < tmp.size(); ++i) {
+        binary_data.push_back(tmp[i]);
+    }
+    tmp = transpose(v);
+    for (size_t i = 0; i < tmp.size(); ++i) {
+        binary_data.push_back(tmp[i]);
+    }
+    index = 0;
+}
+
+void decompressor::tokenizer::back(size_t size__) {
+    index -= size__;
+}
+
 

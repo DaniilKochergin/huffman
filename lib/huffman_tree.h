@@ -10,7 +10,7 @@
 #include <unordered_set>
 
 struct huffman_tree {
-    explicit huffman_tree(std::vector<uint32_t> const &data);
+    explicit huffman_tree(std::unordered_map<char, uint32_t> const &data);
 
     std::unordered_map<char, std::vector<bool>> const &get_keys() const;
 

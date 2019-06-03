@@ -2,10 +2,18 @@
 // Created by daniil on 31.05.19.
 //
 
+#include <algorithm>
 #include "compressor.h"
 
 
-compressor::compressor(data_source const &data) : tree(data.get_count_data()) {}
+compressor::compressor(data_source const &data) : tree(data.get_count_data()) {
+    size_code = data.get_size();
+    std::vector<bool> tmp;
+    for (size_t i = 0; i < 32; ++i) {
+        tmp.push_back((size_code >> (31 - i)) & 1);
+    }
+    size = transpose(tmp);
+}
 
 std::vector<char> compressor::get_huffman_code() {
     std::vector<char> const huff_tree = tree.get_tree();
@@ -15,12 +23,10 @@ std::vector<char> compressor::get_huffman_code() {
             binary_code_tree.push_back(true);
             binary_code_tree.push_back(false);
         }
-
         if (huff_tree[i] == 'R') {
             binary_code_tree.push_back(false);
             binary_code_tree.push_back(true);
         }
-
         if (huff_tree[i] == 'U') {
             binary_code_tree.push_back(false);
             binary_code_tree.push_back(false);
@@ -35,30 +41,35 @@ std::vector<char> compressor::get_huffman_code() {
 }
 
 std::vector<char> compressor::get_compressed_code(std::vector<char> const &data) {
-
-    uint32_t sz = data.size();
     std::vector<bool> tmp;
-    for(size_t i =0;i<32;++i){
-        tmp.push_back((sz>>(31-i))&1);
-    }
-    size = transpose(tmp);
     std::unordered_map<char, std::vector<bool>> const keys = tree.get_keys();
-    tmp.clear();
+    size_code -= data.size();
+    for (size_t i = 0; i < last_bits.size(); ++i) {
+        tmp.push_back(last_bits[i]);
+    }
+    last_bits.clear();
     for (size_t i = 0; i < data.size(); ++i) {
         auto it = keys.find(data[i]);
         for (size_t j = 0; j < it->second.size(); ++j) {
-            tmp.push_back(it->second[i]);
+            tmp.push_back(it->second[j]);
         }
+    }
+    if (size_code != 0) {
+        while (tmp.size() % 8 != 0) {
+            last_bits.push_back(tmp.back());
+            tmp.pop_back();
+        }
+        std::reverse(last_bits.begin(), last_bits.end());
     }
     return transpose(tmp);
 }
 
 std::vector<char> compressor::transpose(std::vector<bool> v) const {
     std::vector<char> res;
-    for (char i = 0; i <= v.size() / 8; ++i) {
-        if (i*8<v.size()) res.push_back(0);
-        for (char j = 0; j < 8; ++j) {
-            if (i*8+j>=v.size()) break;
+    for (size_t i = 0; i * 8 < v.size(); ++i) {
+        res.push_back(0);
+        for (size_t j = 0; j < 8; ++j) {
+            if (i * 8 + j >= v.size()) break;
             res[i] |= (static_cast<char>(v[i * 8 + j]) << (8 - j - 1));
         }
     }

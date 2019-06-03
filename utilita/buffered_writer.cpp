@@ -23,5 +23,6 @@ void buffered_writer::write(char a) {
     } else {
         writer.write(buffer, BUFF_SIZE);
         begin = 0;
+        buffer[begin++]=a;
     }
 }
