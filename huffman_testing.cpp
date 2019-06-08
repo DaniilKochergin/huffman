@@ -13,9 +13,9 @@
 namespace {
 
     size_t number_of_iterations = 1;
-    std::string const fn1("/home/daniil/CLionProjects/huffman/f1.txt");
-    std::string const fn2("/home/daniil/CLionProjects/huffman/f2.txt");
-    std::string const fn3("/home/daniil/CLionProjects/huffman/f3.txt");
+    std::string const fn1("f1.txt");
+    std::string const fn2("f2.txt");
+    std::string const fn3("f3.txt");
 
 
     void something_changes(std::string const &filename) {
