@@ -30,7 +30,7 @@ namespace {
         }
         std::random_device rd;
         std::mt19937 gen(rd());
-        auto dist = std::uniform_int_distribution(0, static_cast<int>(s.size()));
+        auto dist = std::uniform_int_distribution<int>(0, static_cast<int>(s.size()));
         reader.close();
 
         int ind = dist(gen);
@@ -109,7 +109,7 @@ namespace {
         char *s = new char[size];
         std::random_device rd;
         std::mt19937 gen(rd());
-        auto dist = std::uniform_int_distribution(0, 256);
+        auto dist = std::uniform_int_distribution<int>(0, 256);
         for (size_t i = 0; i < size; ++i) {
             s[i] = dist(gen);
         }
@@ -218,7 +218,7 @@ TEST(corectness, block_testing_any_size_compress_decompress_100kb) {
         generate_file(fn1, 102400);
         std::random_device rd;
         std::mt19937 gen(rd());
-        auto dist = std::uniform_int_distribution(1024, 1024000);
+        auto dist = std::uniform_int_distribution<int>(1024, 1024000);
         size_t block_size1 = dist(gen);
         size_t block_size2 = dist(gen);
         block_compress(fn1, fn2, block_size1);
