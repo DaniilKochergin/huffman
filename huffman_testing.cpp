@@ -23,7 +23,7 @@ namespace {
         while (!reader.eof()) {
             char *tmp = new char[256];
             reader.read(tmp, 256);
-            for (size_t i = 0; i < reader.gcount(); ++i) {
+            for (int i = 0; i < reader.gcount(); ++i) {
                 s.push_back(tmp[i]);
             }
             delete[] tmp;
@@ -53,14 +53,13 @@ namespace {
         while (!reader.eof()) {
             char *tmp = new char[256];
             reader.read(tmp, 256);
-            for (size_t i = 0; i < reader.gcount(); ++i) {
+            for (int i = 0; i < reader.gcount(); ++i) {
                 s.push_back(tmp[i]);
             }
             delete[] tmp;
         }
         std::random_device rd;
         std::mt19937 gen(rd());
-        auto dist = std::uniform_int_distribution(0, static_cast<int>(s.size()));
         reader.close();
 
         s.push_back(s.back());
@@ -232,7 +231,6 @@ TEST(corectness, block_testing_compress_decompress_random_size) {
     for (size_t i = 0; i < 100; ++i) {
         std::random_device rd;
         std::mt19937 gen(rd());
-        auto dist = std::uniform_int_distribution(0, 10240000);
         block_compress(fn1, fn2, 1024);
         block_decompress(fn2, fn3, 1024);
         EXPECT_TRUE(equals_files(fn1, fn3));

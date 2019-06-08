@@ -9,7 +9,7 @@ buffered_writer::~buffered_writer() {
     writer.close();
 }
 
-buffered_writer::buffered_writer(std::string const &file) : begin(0), writer(file, std::ofstream::binary){
+buffered_writer::buffered_writer(std::string const &file) : writer(file, std::ofstream::binary), begin(0){
     if (writer.fail()){
         writer.close();
         throw std::runtime_error("Writer failed!");

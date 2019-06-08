@@ -15,9 +15,9 @@ struct buffered_writer {
     void write(char a);
 private:
     std::ofstream writer;
+    size_t begin = 0;
     const static size_t BUFF_SIZE = 1024;
     char buffer[BUFF_SIZE];
-    size_t begin;
 };
 
 

@@ -5,7 +5,7 @@
 #include <unordered_set>
 #include "decompressor.h"
 
-decompressor::decompressor(std::vector<char> const &a) : data(a), size(0) {}
+decompressor::decompressor(std::vector<char> const &a) : size(0), data(a) {}
 
 void decompressor::decompress_block(std::vector<char> const &block, std::vector<char> & res) {
     data.resize(block);
