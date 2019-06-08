@@ -26,7 +26,7 @@ int main(int count, char **args) {
             block_decompress(f1, f2, block_size);
         }
     } else {
-        throw std::runtime_error("Wrong number of args");
+        throw std::runtime_error("Wrong number of args!");
     }
     return 0;
 }

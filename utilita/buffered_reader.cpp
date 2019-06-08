@@ -26,12 +26,16 @@ char buffered_reader::read() {
         reader.read(buffer, BUFF_SIZE);
         begin = 0;
         end = reader.gcount();
-        return buffer[begin++];
+        if (begin != end) {
+            return buffer[begin++];
+        } else {
+            throw std::runtime_error("Read from end of file!");
+        }
     }
 }
 
 bool buffered_reader::eof() {
-    if (begin == end){
+    if (begin == end) {
         reader.read(buffer, BUFF_SIZE);
         begin = 0;
         end = reader.gcount();
