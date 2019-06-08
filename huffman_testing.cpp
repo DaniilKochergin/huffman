@@ -66,6 +66,8 @@ namespace {
 
         s.push_back(s.back());
         s.push_back(s[0]);
+        s.push_back(s[0]);
+        s.push_back(s.back());
 
         char *out = new char[s.size()];
 
@@ -119,6 +121,17 @@ namespace {
 }
 
 
+//TEST(corectness, testing_my_test) {
+//    compress(fn1, fn2);
+//    decompress(fn2, fn3);
+//    EXPECT_TRUE(equals_files(fn1, fn3));
+//    std::string p1("/home/daniil/CLionProjects/huffman/p1.png");
+//    std::string p2("/home/daniil/CLionProjects/huffman/p2.png");
+//    compress(p1, fn2);
+//    decompress(fn2, p2);
+//    EXPECT_TRUE(equals_files(p1, p2));
+//}
+
 TEST(corectness, testing_empty_file) {
     generate_file(fn1, 0);
     compress(fn1, fn2);
@@ -156,19 +169,17 @@ TEST(corectness, testing_compress_decompress_10kb) {
 
 TEST(corectness, testing_compress_decompress_100kb) {
     generate_file(fn1, 102400);
-    block_compress(fn1, fn2, 1024);
-    block_decompress(fn2, fn3, 1024);
+    compress(fn1, fn2);
+    decompress(fn2, fn3);
     EXPECT_TRUE(equals_files(fn1, fn3));
 }
 
 
 TEST(corectness, testing_compress_decompress_1000kb) {
-    for (size_t i = 0; i < number_of_iterations; ++i) {
-        generate_file(fn1, 1024000);
-        compress(fn1, fn2);
-        decompress(fn2, fn3);
-        EXPECT_TRUE(equals_files(fn1, fn3));
-    }
+    generate_file(fn1, 1024000);
+    compress(fn1, fn2);
+    decompress(fn2, fn3);
+    EXPECT_TRUE(equals_files(fn1, fn3));
 }
 
 TEST(corectness, testing_compress_decompress_10000kb) {
@@ -187,12 +198,10 @@ TEST(corectness, block_testing_compress_decompress_1kb) {
 }
 
 TEST(corectness, block_testing_compress_decompress_10kb) {
-    for (size_t i = 0; i < number_of_iterations; ++i) {
-        generate_file(fn1, 10240);
-        block_compress(fn1, fn2, 1024);
-        block_decompress(fn2, fn3, 1024);
-        EXPECT_TRUE(equals_files(fn1, fn3));
-    }
+    generate_file(fn1, 10240);
+    block_compress(fn1, fn2, 1024);
+    block_decompress(fn2, fn3, 1024);
+    EXPECT_TRUE(equals_files(fn1, fn3));
 }
 
 TEST(corectness, block_testing_compress_decompress_100kb) {
@@ -205,8 +214,8 @@ TEST(corectness, block_testing_compress_decompress_100kb) {
 
 TEST(corectness, block_testing_compress_decompress_1000kb) {
     generate_file(fn1, 1024000);
-    compress(fn1, fn2);
-    decompress(fn2, fn3);
+    block_compress(fn1, fn2, 1024);
+    block_decompress(fn2, fn3, 1024);
     EXPECT_TRUE(equals_files(fn1, fn3));
 }
 
@@ -253,22 +262,39 @@ TEST(invalid_test, wrong_file_name) {
 TEST(invalid_test, bad_bits_in_compressed_file) {
     generate_file(fn1, 102400);
     compress(fn1, fn2);
-    EXPECT_NO_FATAL_FAILURE(decompress(fn1, fn3));
+    try {
+        decompress(fn1, fn3);
+    } catch (...) {
+
+    }
     for (size_t i = 0; i < number_of_iterations; ++i) {
         something_changes(fn2);
-        EXPECT_NO_FATAL_FAILURE(decompress(fn2, fn3));
-        EXPECT_NO_FATAL_FAILURE(block_decompress(fn2, fn3, 1024));
+        try {
+            decompress(fn2, fn3);
+        } catch (...) {
+            compress(fn1, fn2);
+        }
+        try {
+            block_decompress(fn2, fn3, 1024);
+        } catch (...) {
+            compress(fn1, fn2);
+        }
     }
 }
 
 TEST(invalid_test, extra_bits_in_compressed_file) {
-    generate_file(fn1, 102400);
+    generate_file(fn1, 100);
     compress(fn1, fn2);
     add_something(fn2);
-    for (size_t i = 0; i < number_of_iterations; ++i) {
-        add_something(fn2);
-        EXPECT_NO_FATAL_FAILURE(decompress(fn2, fn3));
-        EXPECT_NO_FATAL_FAILURE(block_decompress(fn2, fn3, 1024));
+    try {
+        decompress(fn2, fn3);
+    } catch (...) {
+
+    }
+    try {
+        block_decompress(fn2, fn3, 1024);
+    } catch (...) {
+
     }
 }
 

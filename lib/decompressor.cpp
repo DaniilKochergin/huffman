@@ -100,7 +100,7 @@ void decompressor::parse_data(std::vector<char> & res) {
 
 
 void decompressor::check() {
-    if (size != 0) {
+    if (size > 0) {
         throw std::runtime_error("Bad bits!");
     }
 }
