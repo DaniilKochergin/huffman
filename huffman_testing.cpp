@@ -3,8 +3,7 @@
 #include <vector>
 #include <iostream>
 #include <random>
-#include "utilita/buffered_reader.h"
-#include "utilita/buffered_writer.h"
+#include <fstream>
 #include "utilita/file_compressor.h"
 #include "utilita/file_decompressor.h"
 #include "gtest/gtest.h"
@@ -111,7 +110,7 @@ namespace {
         char *s = new char[size];
         std::random_device rd;
         std::mt19937 gen(rd());
-        auto dist = std::uniform_int_distribution(0, 255);
+        auto dist = std::uniform_int_distribution(0, 256);
         for (size_t i = 0; i < size; ++i) {
             s[i] = dist(gen);
         }
@@ -120,17 +119,6 @@ namespace {
     }
 }
 
-
-//TEST(corectness, testing_my_test) {
-//    compress(fn1, fn2);
-//    decompress(fn2, fn3);
-//    EXPECT_TRUE(equals_files(fn1, fn3));
-//    std::string p1("/home/daniil/CLionProjects/huffman/p1.png");
-//    std::string p2("/home/daniil/CLionProjects/huffman/p2.png");
-//    compress(p1, fn2);
-//    decompress(fn2, p2);
-//    EXPECT_TRUE(equals_files(p1, p2));
-//}
 
 TEST(corectness, testing_empty_file) {
     generate_file(fn1, 0);
