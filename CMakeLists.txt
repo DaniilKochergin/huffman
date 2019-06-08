@@ -1,11 +1,15 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.10.2)
 project(huffman)
 
 include_directories(${HUFFMAN_DIR})
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(huffman huffman_testing.cpp
+
+add_executable(huffman_testing huffman_testing.cpp)
+add_executable(huffman_tool tool.cpp)
+
+add_library(huffman_library
         utilita/buffered_reader.cpp
         lib/huffman_tree.cpp
         utilita/buffered_writer.cpp
@@ -24,4 +28,6 @@ if (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=address,undefined -D_GLIBCXX_DEBUG")
 endif ()
 
-target_link_libraries(huffman -lpthread)
+target_link_libraries(huffman_testing huffman_library)
+target_link_libraries(huffman_tool huffman_library)
+target_link_libraries(huffman_library -lpthread)
